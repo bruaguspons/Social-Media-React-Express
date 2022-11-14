@@ -4,6 +4,7 @@ const User = require('./../../models/user/User.model')
 const jwt = require('jsonwebtoken')
 
 const multer = require('multer')
+const { request } = require('express')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -17,8 +18,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 // const storageBuff = multer.memoryStorage()
 routes.get('/', async (req, res) => {
-    const allpost = await Post.find().sort([['updatedAt', -1]])
-    res.json(allpost)
+    if (!req.query.word) {
+        const allpost = await Post.find().sort([['updatedAt', -1]])
+        return res.json(allpost)
+    }
+    // const postWord = await Post.find({ userInfo: { $elemMatch: { name: { $regex: '^' + req.query.word, $options: 'i' } } } }).sort([['updatedAt', -1]])
+    const postWord = await Post.find({ "userInfo.0": { $regex: '\w*' + req.query.word + '\w*', $options: 'i' } }).sort([['updatedAt', -1]])
+    return res.json(postWord)
 })
 
 
@@ -41,7 +47,8 @@ routes.post('/', upload.single('file'), async (req, res) => {
         const user = await User.findById(data.userId)
         console.log(data.userId)
         console.log(user.name)
-        const newPost = await Post({ ...data, userInfo: [user.name, user.email], url: req.file.path })
+        const urlUser = user.url ?? ''
+        const newPost = await Post({ ...data, userInfo: [user.name, user.email, urlUser], url: `http://localhost:8000/${req.file.path}` })
         await newPost.save()
         return res.status(201).json(newPost)
     } catch (error) {

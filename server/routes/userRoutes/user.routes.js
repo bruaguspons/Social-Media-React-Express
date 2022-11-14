@@ -60,7 +60,7 @@ routes.post('/', upload.single('file'), async (req, res) => {
         let { password } = data
         const salt = await bcrypt.genSalt(10);
         password = await bcrypt.hash(password, salt);
-        const newUser = await User({ ...data, password, url: req.file.path })
+        const newUser = await User({ ...data, password, url: `http://localhost:8000/${req.file.path}` })
         await newUser.save()
         res.status(201).json(newUser)
     } catch (error) {

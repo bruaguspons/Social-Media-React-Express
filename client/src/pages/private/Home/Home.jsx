@@ -5,6 +5,7 @@ import Spinner from './../../../components/Spinner'
 function Home() {
     const [post, setPost] = useState([])
     const [loading, setLoading] = useState(true)
+    const [serchWord, setSearchWord] = useState('')
     const getPost = async () => {
         const res = await fetch('http://localhost:8000/post')
         const post = await res.json()
@@ -22,9 +23,14 @@ function Home() {
         setSearchWord(e.target.value)
     }
 
-    const handleClick = (e) => {
+    const handleClick = async (e) => {
         e.preventDefault()
-        dispatcher(createSearch(serchWord))
+        setLoading(true)
+        const resWord = await fetch(`http://localhost:8000/post?word=${serchWord}`)
+        const postWord = await resWord.json()
+        setPost(postWord)
+        console.log(postWord)
+        setLoading(false)
         // e.target.reset()
     }
     return (
@@ -47,17 +53,18 @@ function Home() {
                         {
                             post.map(post => (
                                 <div key={post._id} className='h-max w-2/3 max-w-2xl my-2 p-3 bg-gradient-to-r from-cyan-400 to-sky-100 border-b-2 border-black '>
-                                    <div>
+                                    <div className='flex items-center gap-4'>
+                                        <img src={post.userInfo[2]} className='w-10 h-10 object-cover rounded-full' alt="" />
                                         <p>{post.userInfo[0]} - {post.userInfo[1]}</p>
                                     </div>
                                     <div className='h-full flex flex-col justify-between items-center'>
                                         <div className='w-full'>
-                                            <h2 className='font-bold text-center text-2xl'>{post.title}</h2>
-                                            <p>{post.content}</p>
+                                            <h2 className='font-bold text-center text-2xl mb-4'>{post.title}</h2>
+                                            <p className='px-8'>{post.content}</p>
                                         </div>
                                         {post.url &&
-                                            <div className='h-32'>
-                                                <img src={`http://localhost:8000/${post.url}`} alt="" className='h-full object-cover' />
+                                            <div className='w-1/2 mt-2'>
+                                                <img src={post.url} alt="" className='h-full object-cover' />
                                             </div>
                                         }
                                     </div>

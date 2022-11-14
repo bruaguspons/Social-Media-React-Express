@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { createUser } from '../../../redux/state/userSlice'
 import { geteLogin } from '../../../utils/login'
 import { createSearch } from '../../../redux/state/searchSlice'
+import PRIVATE from '../../../routes/Private.routes'
 function CreateUser() {
     const dispatcher = useDispatch()
     const navigate = useNavigate()

@@ -14,7 +14,7 @@ function Navbar() {
         <nav className='sm:text-sm md:text-base xl:text-lg font-bold text-black bg-gradient-to-r from-cyan-400 to-sky-100 border-b-2 border-black sticky top-0 z-50'>
             <div className=' px-4 py-1 flex flex-row items-center justify-between' >
                 <div className='flex items-center gap-4'>
-                    <img className='h-12 w-12 rounded-full object-cover' src={`http://localhost:8000/${user.url}`} alt="" />
+                    <img className='h-12 w-12 rounded-full object-cover' src={user.url} alt="" />
                     <p>Hi! {user.name}</p>
                 </div>
 
@@ -28,7 +28,7 @@ function Navbar() {
                     </li>
                     <li>
                         <button className='hover:bg-cyan-500 py-4 px-6 rounded-3xl sm:py-2 sm:px-4' onClick={() => {
-                            dispatcher(resetUser)
+                            dispatcher(resetUser())
                             navigate(PRIVATE.HOME)
                         }}>Logout</button>
                     </li>
