@@ -1,5 +1,6 @@
 const express = require('express')
 const { connect } = require('mongoose')
+
 require('dotenv').config()
 const routesUser = require('./routes/userRoutes/user.routes')
 const routesPost = require('./routes/post/post.routes')
@@ -9,6 +10,7 @@ const app = express()
 
 app.use(cors())
 
+app.use('/images', express.static('images'));
 app.use(express.json({ limit: "30mb", extended: true }))
 app.use(express.urlencoded({ limit: "30mb", extended: true }))
 // app.use(express.bodyParser());

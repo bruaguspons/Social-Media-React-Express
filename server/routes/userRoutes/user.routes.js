@@ -4,6 +4,24 @@ const jwt = require('jsonwebtoken')
 const User = require('./../../models/user/User.model')
 const routes = Router()
 
+const multer = require('multer')
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images/user')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    },
+})
+
+const upload = multer({ storage: storage })
+
+routes.get('/', async (req, res) => {
+    const user = await User.findById(req.body.id)
+    res.json(user)
+})
+
 routes.post('/login', async (req, res) => {
     try {
         // const user = await User.find()
@@ -36,12 +54,13 @@ routes.post('/login', async (req, res) => {
         res.status(400).json(error.message)
     }
 })
-routes.post('/', async (req, res) => {
+routes.post('/', upload.single('file'), async (req, res) => {
     try {
-        let { password } = req.body
+        const data = JSON.parse(req.body.data)
+        let { password } = data
         const salt = await bcrypt.genSalt(10);
         password = await bcrypt.hash(password, salt);
-        const newUser = await User({ ...req.body, password })
+        const newUser = await User({ ...data, password, url: req.file.path })
         await newUser.save()
         res.status(201).json(newUser)
     } catch (error) {

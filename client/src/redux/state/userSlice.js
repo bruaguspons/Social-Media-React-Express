@@ -4,7 +4,8 @@ const initUser = {
     id: '',
     token: '',
     name: '',
-    email: ''
+    email: '',
+    url: ''
 }
 
 export const UserSlice = createSlice({

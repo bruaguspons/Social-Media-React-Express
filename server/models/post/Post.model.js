@@ -9,10 +9,12 @@ const PostSchema = Schema({
         type: String,
         // require: true
     },
+    url: String,
     userId: {
         type: 'ObjectId',
         require: true
-    }
+    },
+    userInfo: [String]
 }, {
     timestamps: true,
     versionKey: false

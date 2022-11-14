@@ -13,16 +13,18 @@ function App() {
 
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route path={'/'} element={<Navigate to={PRIVATE.PRIVATE} />} />
-          <Route element={<AuthGuard />}>
-            <Route path={`${PRIVATE.PRIVATE}/*`} element={<Private />} />
-          </Route>
-          <Route path={PUBLIC.LOGIN} element={<Login />} />
-          <Route path={PUBLIC.CREATEUSER} element={<CreateUser />} />
-        </Routes>
-      </BrowserRouter>
+      <div className=' w-full min-h-screen bg-cyan-600'>
+        <BrowserRouter>
+          <Routes>
+            <Route path={'/'} element={<Navigate to={PRIVATE.PRIVATE} />} />
+            <Route element={<AuthGuard />}>
+              <Route path={`${PRIVATE.PRIVATE}/*`} element={<Private />} />
+            </Route>
+            <Route path={PUBLIC.LOGIN} element={<Login />} />
+            <Route path={PUBLIC.CREATEUSER} element={<CreateUser />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
     </Provider>
   )
 }

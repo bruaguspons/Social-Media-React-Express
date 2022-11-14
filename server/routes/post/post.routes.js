@@ -1,13 +1,30 @@
 const routes = require('express').Router()
 const Post = require('./../../models/post/Post.model')
+const User = require('./../../models/user/User.model')
 const jwt = require('jsonwebtoken')
 
+const multer = require('multer')
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images/')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    },
+})
+
+const upload = multer({ storage: storage })
+// const storageBuff = multer.memoryStorage()
 routes.get('/', async (req, res) => {
-    const allpost = await Post.find()
+    const allpost = await Post.find().sort([['updatedAt', -1]])
     res.json(allpost)
 })
-routes.post('/', async (req, res) => {
+
+
+routes.post('/', upload.single('file'), async (req, res) => {
     try {
+        const data = JSON.parse(req.body.content)
 
         let authorization = req.get('Autherization')
         authorization &&= authorization.split(' ')
@@ -18,10 +35,13 @@ routes.post('/', async (req, res) => {
             decodedToken = jwt.verify(token, process.env.SECRET_KEY ?? '123')
         }
 
-        if (!token || !decodedToken.id || decodedToken.id != req.body.userId) {
+        if (!token || !decodedToken.id || decodedToken.id != data.userId) {
             return res.status(401).json({ 'error': 'token missing or invalid' })
         }
-        const newPost = await Post(req.body)
+        const user = await User.findById(data.userId)
+        console.log(data.userId)
+        console.log(user.name)
+        const newPost = await Post({ ...data, userInfo: [user.name, user.email], url: req.file.path })
         await newPost.save()
         return res.status(201).json(newPost)
     } catch (error) {
