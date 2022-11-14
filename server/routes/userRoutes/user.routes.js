@@ -4,9 +4,10 @@ const jwt = require('jsonwebtoken')
 const User = require('./../../models/user/User.model')
 const routes = Router()
 
-routes.get('/', async (req, res) => {
+routes.post('/login', async (req, res) => {
     try {
-
+        // const user = await User.find()
+        // return res.json(user)
         const { body } = req
         const { email, password } = body
         const user = await User.findOne({ email })
