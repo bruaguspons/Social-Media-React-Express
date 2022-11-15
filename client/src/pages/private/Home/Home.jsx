@@ -2,7 +2,11 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import Spinner from './../../../components/Spinner'
+import Heart from './../../../assets/heart.svg'
+import { useSelector } from 'react-redux'
+
 function Home() {
+    const user = useSelector(state => state.user)
     const [post, setPost] = useState([])
     const [loading, setLoading] = useState(true)
     const [serchWord, setSearchWord] = useState('')
@@ -33,6 +37,28 @@ function Home() {
         setLoading(false)
         // e.target.reset()
     }
+    const handleLike = async (pk, arrLikes) => {
+        console.log(pk, arrLikes)
+        let [post_to_change] = post.filter(post => post._id === pk)
+        const index = post.indexOf(post_to_change)
+        console.log(index)
+        if (arrLikes.includes(user.id)) {
+            post_to_change.likes = post_to_change.likes.filter(id => id !== user.id)
+        } else {
+            post_to_change.likes.push(user.id)
+        }
+        const allPost = post.filter(post => post._id !== pk)
+        allPost.splice(index, 0, post_to_change)
+        setPost(allPost)
+        const res = await fetch('http://localhost:8000/post/likes', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId: pk, arrLikes: post_to_change.likes })
+        })
+        const data = await res.json()
+        console.log(data)
+    }
+
     return (
         <div >
             <div className="w-full flex items-center justify-center">
@@ -67,6 +93,10 @@ function Home() {
                                                 <img src={post.url} alt="" className='h-full object-cover' />
                                             </div>
                                         }
+                                        <div className='flex items-center justify-center  my-2'>
+                                            <span>{post.likes.length}</span>
+                                            <button className='ml-3 w-5 h-5' onClick={() => handleLike(post._id, post.likes)}><img className={post.likes.includes(user.id) ? 'color-red' : 'color-white'} src={Heart} alt="heart" /></button>
+                                        </div>
                                     </div>
                                 </div>
                             ))

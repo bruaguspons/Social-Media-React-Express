@@ -22,7 +22,6 @@ routes.get('/', async (req, res) => {
         const allpost = await Post.find().sort([['updatedAt', -1]])
         return res.json(allpost)
     }
-    // const postWord = await Post.find({ userInfo: { $elemMatch: { name: { $regex: '^' + req.query.word, $options: 'i' } } } }).sort([['updatedAt', -1]])
     const postWord = await Post.find({ "userInfo.0": { $regex: '\w*' + req.query.word + '\w*', $options: 'i' } }).sort([['updatedAt', -1]])
     return res.json(postWord)
 })
@@ -75,6 +74,14 @@ routes.delete('/', async (req, res) => {
     } catch (error) {
         return res.status(400).json(error.message)
     }
+})
+
+routes.put('/likes', async (req, res) => {
+    const { arrLikes, postId } = req.body
+    console.log(arrLikes, postId)
+    const post = await Post.findByIdAndUpdate(postId, { likes: arrLikes })
+    return res.json(post.likes)
+
 })
 
 module.exports = routes

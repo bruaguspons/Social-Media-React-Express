@@ -14,7 +14,8 @@ const PostSchema = Schema({
         type: 'ObjectId',
         require: true
     },
-    userInfo: [String]
+    userInfo: [String],
+    likes: ['ObjectId']
 }, {
     timestamps: true,
     versionKey: false

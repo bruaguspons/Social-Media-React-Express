@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.color-red {
+    filter: invert(11%) sepia(87%) saturate(6724%) hue-rotate(8deg) brightness(129%) contrast(122%);
+
+}
+
+.color-white {
+    filter: invert(100%) sepia(0%) saturate(7472%) hue-rotate(304deg) brightness(100%) contrast(106%);
+}
