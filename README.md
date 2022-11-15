@@ -25,3 +25,5 @@ mongod(obs: you must have mongoDb installed on your PC)
 npm install 
 npm run dev
 ```
+
+for a better experience you should run the file "fakeData.js", this will create 10 fake users.
