@@ -1,6 +1,9 @@
 # Social Media
 
 Social Media app made with Express.js, React Mongodb where you can singup, logup and logout from your session, you can also create, delete and like post.
+
+---
+
 ## Installation
 
 make a git-clone of this repo and run the follow commands:
@@ -26,4 +29,4 @@ npm install
 npm run dev
 ```
 
-for a better experience you should run the file "fakeData.js", this will create 10 fake users.
+For a better experience you should run the file "fakeData.js" on server, this will create 10 fake users.
