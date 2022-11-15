@@ -59,6 +59,24 @@ function Home() {
         console.log(data)
     }
 
+    const handleDelete = async (pk) => {
+        const res = await fetch('http://localhost:8000/post/', {
+            method: 'DElete',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: pk })
+        })
+        console.log(res.status)
+        if (res.status === 400) {
+            msg = await res.json()
+            window.alert(msg)
+        } else {
+            if (res.status === 204) {
+                const allPost = post.filter(post => post._id !== pk)
+                setPost(allPost)
+            }
+        }
+    }
+
     return (
         <div >
             <div className="w-full flex items-center justify-center">
@@ -97,6 +115,10 @@ function Home() {
                                             <span>{post.likes.length}</span>
                                             <button className='ml-3 w-5 h-5' onClick={() => handleLike(post._id, post.likes)}><img className={post.likes.includes(user.id) ? 'color-red' : 'color-white'} src={Heart} alt="heart" /></button>
                                         </div>
+                                        {
+                                            post.userInfo[1] == user.email &&
+                                            <div><button className='px-4 py-2 bg-cyan-500 rounded-full hover:bg-cyan-400' onClick={() => handleDelete(post._id)}>Delete</button></div>
+                                        }
                                     </div>
                                 </div>
                             ))

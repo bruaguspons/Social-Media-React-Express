@@ -6,10 +6,9 @@ export const geteLogin = async (user) => {
         body: JSON.stringify(user)
     })
     if (res.status === 401) {
-        return {}
+        return 401
     } else {
         const data = await res.json()
-        console.log(data)
         return data
     }
 

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { createUser } from '../../../redux/state/userSlice'
 import PRIVATE from '../../../routes/Private.routes'
 import PUBLIC from '../../../routes/Public.routes'
+import { geteLogin } from '../../../utils/getLogin'
 
 function Login() {
 
@@ -16,20 +17,14 @@ function Login() {
 
     const handleChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value })
-        console.log(user)
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const res = await fetch('http://localhost:8000/user/login', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(user)
-        })
-        const data = await res.json()
-        console.log(data)
-        if (res.status === 401) {
+        const data = await geteLogin(user)
+        if (data === 401) {
             e.target.reset()
+            window.alert('wrong email or password')
         } else {
             dispatcher(createUser(data))
             navigate(`/${PRIVATE.PRIVATE}/${PRIVATE.HOME}`)

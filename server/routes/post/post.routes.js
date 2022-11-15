@@ -1,10 +1,10 @@
 const routes = require('express').Router()
-const Post = require('./../../models/post/Post.model')
-const User = require('./../../models/user/User.model')
-const jwt = require('jsonwebtoken')
+const getPost = require('./controllers/post.get')
+const new_post = require('./controllers/post.post')
+const getLikes = require('./controllers/post.put')
+const deletePost = require('./controllers/post.delete')
 
 const multer = require('multer')
-const { request } = require('express')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -16,72 +16,13 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
-// const storageBuff = multer.memoryStorage()
-routes.get('/', async (req, res) => {
-    if (!req.query.word) {
-        const allpost = await Post.find().sort([['updatedAt', -1]])
-        return res.json(allpost)
-    }
-    const postWord = await Post.find({ "userInfo.0": { $regex: '\w*' + req.query.word + '\w*', $options: 'i' } }).sort([['updatedAt', -1]])
-    return res.json(postWord)
-})
 
+routes.get('/', getPost)
 
-routes.post('/', upload.single('file'), async (req, res) => {
-    try {
-        const data = JSON.parse(req.body.content)
+routes.post('/', upload.single('file'), new_post)
 
-        let authorization = req.get('Autherization')
-        authorization &&= authorization.split(' ')
-        let token = null
-        let decodedToken = null
-        if (authorization?.length && authorization[0].toLowerCase() === 'bearer') {
-            token = authorization[1]
-            decodedToken = jwt.verify(token, process.env.SECRET_KEY ?? '123')
-        }
+routes.delete('/', deletePost)
 
-        if (!token || !decodedToken.id || decodedToken.id != data.userId) {
-            return res.status(401).json({ 'error': 'token missing or invalid' })
-        }
-        const user = await User.findById(data.userId)
-        console.log(data.userId)
-        console.log(user.name)
-        const urlUser = user.url ?? ''
-        const newPost = await Post({ ...data, userInfo: [user.name, user.email, urlUser], url: `http://localhost:8000/${req.file.path}` })
-        await newPost.save()
-        return res.status(201).json(newPost)
-    } catch (error) {
-        return res.status(400).json(error.message)
-    }
-})
-routes.delete('/', async (req, res) => {
-    try {
-        let authorization = req.get('Autherization')
-        authorization &&= authorization.split(' ')
-        let token = null
-        let decodedToken = null
-        if (authorization?.length && authorization[0].toLowerCase() === 'bearer') {
-            token = authorization[1]
-            decodedToken = jwt.verify(token, process.env.SECRET_KEY ?? '123')
-        }
-
-        if (!token || !decodedToken.id || decodedToken.id != req.body.userId) {
-            return res.status(401).json({ 'error': 'token missing or invalid' })
-        }
-        const post = await Post.findByIdAndDelete(req.body.id)
-        return res.status(204)
-
-    } catch (error) {
-        return res.status(400).json(error.message)
-    }
-})
-
-routes.put('/likes', async (req, res) => {
-    const { arrLikes, postId } = req.body
-    console.log(arrLikes, postId)
-    const post = await Post.findByIdAndUpdate(postId, { likes: arrLikes })
-    return res.json(post.likes)
-
-})
+routes.put('/likes', getLikes)
 
 module.exports = routes
